@@ -8,7 +8,7 @@ type UploadOptions = Parameters<typeof put>[2];
 export async function uploadToBlob(
   pathname: string,
   body: UploadBody,
-  options: UploadOptions = {}
+  options?: Partial<UploadOptions>
 ) {
   return put(pathname, body, {
     access: "public",
