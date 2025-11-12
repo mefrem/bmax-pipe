@@ -6,7 +6,7 @@ import { ensureCoreSchema } from "@/lib/projects";
 
 export async function GET(
   _request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const session = await auth();
 
@@ -16,6 +16,8 @@ export async function GET(
 
   await ensureCoreSchema();
 
+  const { id } = await params;
+
   const { rows } = await sql<{
     id: string;
     status: string;
@@ -24,7 +26,7 @@ export async function GET(
   }>`
     SELECT id, status, repo_url, claude_instructions
     FROM project_runs
-    WHERE id = ${params.id} AND user_id = ${session.user.id}
+    WHERE id = ${id} AND user_id = ${session.user.id}
     LIMIT 1
   `;
 
