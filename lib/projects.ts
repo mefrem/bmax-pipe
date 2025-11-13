@@ -76,10 +76,23 @@ export async function ensureProjectTemplates() {
 
   // Remove templates that no longer have files
   if (currentSlugs.length > 0) {
-    await sql`
-      DELETE FROM project_templates
-      WHERE slug NOT IN ${sql(currentSlugs)}
+    // Get all existing slugs from database
+    const { rows: existingTemplates } = await sql<{ slug: string }>`
+      SELECT slug FROM project_templates
     `;
+    
+    // Find slugs that need to be deleted (exist in DB but not in filesystem)
+    const slugsToDelete = existingTemplates
+      .map((t) => t.slug)
+      .filter((slug) => !currentSlugs.includes(slug));
+    
+    // Delete each orphaned template
+    for (const slug of slugsToDelete) {
+      await sql`
+        DELETE FROM project_templates
+        WHERE slug = ${slug}
+      `;
+    }
   }
 }
 
