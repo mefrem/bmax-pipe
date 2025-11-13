@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { sql } from "@/lib/db";
 import { ensureCoreSchema } from "@/lib/projects";
+import { ensureFeedbackSchema } from "@/lib/feedback-schema";
 
 type Stats = {
   totalUsers: number;
@@ -10,6 +11,7 @@ type Stats = {
   failedProjects: number;
   yoloProjects: number;
   bmaxProjects: number;
+  totalFeedback: number;
 };
 
 type RecentProject = {
@@ -27,16 +29,27 @@ type TopTemplate = {
   count: number;
 };
 
+type FeedbackItem = {
+  id: string;
+  user_email: string | null;
+  message: string;
+  screenshot_url: string | null;
+  page_url: string | null;
+  created_at: Date;
+};
+
 async function getStats(): Promise<Stats> {
   await ensureCoreSchema();
+  await ensureFeedbackSchema();
 
-  const [userCount, projectCount, successCount, failedCount, yoloCount, bmaxCount] = await Promise.all([
+  const [userCount, projectCount, successCount, failedCount, yoloCount, bmaxCount, feedbackCount] = await Promise.all([
     sql`SELECT COUNT(*)::int as count FROM users`,
     sql`SELECT COUNT(*)::int as count FROM project_runs`,
     sql`SELECT COUNT(*)::int as count FROM project_runs WHERE status = 'completed'`,
     sql`SELECT COUNT(*)::int as count FROM project_runs WHERE status = 'failed'`,
     sql`SELECT COUNT(*)::int as count FROM project_runs WHERE mode = 'full'`,
     sql`SELECT COUNT(*)::int as count FROM project_runs WHERE mode = 'light'`,
+    sql`SELECT COUNT(*)::int as count FROM feedback`,
   ]);
 
   return {
@@ -46,6 +59,7 @@ async function getStats(): Promise<Stats> {
     failedProjects: failedCount.rows[0]?.count || 0,
     yoloProjects: yoloCount.rows[0]?.count || 0,
     bmaxProjects: bmaxCount.rows[0]?.count || 0,
+    totalFeedback: feedbackCount.rows[0]?.count || 0,
   };
 }
 
@@ -72,6 +86,17 @@ async function getTopTemplates(): Promise<TopTemplate[]> {
   return result.rows;
 }
 
+async function getRecentFeedback(): Promise<FeedbackItem[]> {
+  await ensureFeedbackSchema();
+  const result = await sql<FeedbackItem>`
+    SELECT id, user_email, message, screenshot_url, page_url, created_at
+    FROM feedback
+    ORDER BY created_at DESC
+    LIMIT 10
+  `;
+  return result.rows;
+}
+
 export default async function AdminPage() {
   const session = await auth();
 
@@ -80,10 +105,11 @@ export default async function AdminPage() {
     redirect("/dashboard");
   }
 
-  const [stats, recentProjects, topTemplates] = await Promise.all([
+  const [stats, recentProjects, topTemplates, recentFeedback] = await Promise.all([
     getStats(),
     getRecentProjects(),
     getTopTemplates(),
+    getRecentFeedback(),
   ]);
 
   const successRate = stats.totalProjects > 0 
@@ -100,7 +126,7 @@ export default async function AdminPage() {
 
       <main className="mx-auto max-w-7xl px-6 py-8">
         {/* Stats Grid */}
-        <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mb-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           <StatCard
             title="Total Users"
             value={stats.totalUsers}
@@ -118,6 +144,12 @@ export default async function AdminPage() {
             value={`${successRate}%`}
             subtitle={`${stats.successfulProjects} succeeded, ${stats.failedProjects} failed`}
             color="green"
+          />
+          <StatCard
+            title="Feedback"
+            value={stats.totalFeedback}
+            subtitle="User feedback received"
+            color="purple"
           />
         </div>
 
@@ -207,6 +239,48 @@ export default async function AdminPage() {
             </div>
           </div>
         </div>
+
+        {/* Recent Feedback */}
+        <div className="mt-6 rounded-lg border border-slate-200 bg-white p-6">
+          <h2 className="mb-4 text-lg font-semibold text-slate-900">Recent Feedback</h2>
+          <div className="space-y-4">
+            {recentFeedback.length === 0 ? (
+              <p className="text-sm text-slate-500">No feedback yet</p>
+            ) : (
+              recentFeedback.map((feedback) => (
+                <div
+                  key={feedback.id}
+                  className="border-b border-slate-100 pb-4 last:border-0 last:pb-0"
+                >
+                  <div className="mb-2 flex items-start justify-between">
+                    <p className="text-sm font-medium text-slate-900">
+                      {feedback.user_email || "Anonymous"}
+                    </p>
+                    <span className="text-xs text-slate-500">
+                      {new Date(feedback.created_at).toLocaleString()}
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-700">{feedback.message}</p>
+                  <div className="mt-2 flex items-center gap-4 text-xs text-slate-500">
+                    {feedback.page_url && (
+                      <span className="truncate">{new URL(feedback.page_url).pathname}</span>
+                    )}
+                    {feedback.screenshot_url && (
+                      <a
+                        href={feedback.screenshot_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline"
+                      >
+                        View Screenshot →
+                      </a>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
       </main>
     </div>
   );
@@ -221,12 +295,13 @@ function StatCard({
   title: string;
   value: string | number;
   subtitle: string;
-  color: "blue" | "indigo" | "green";
+  color: "blue" | "indigo" | "green" | "purple";
 }) {
   const colorClasses = {
     blue: "bg-blue-50 text-blue-700",
     indigo: "bg-indigo-50 text-indigo-700",
     green: "bg-green-50 text-green-700",
+    purple: "bg-purple-50 text-purple-700",
   };
 
   return (
