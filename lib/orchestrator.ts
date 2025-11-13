@@ -224,7 +224,8 @@ export async function orchestrateRepository({
   documents,
 }: OrchestrationPayload): Promise<OrchestrationResult> {
   const shortName = createShortRepoName(projectName);
-  const repoName = `bmax-${shortName}-app`;
+  const timestamp = Date.now().toString().slice(-6); // Last 6 digits
+  const repoName = `bmax-${shortName}-${timestamp}`;
 
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "bmax-pipe-"));
 
@@ -258,6 +259,14 @@ export async function orchestrateRepository({
       console.log("[Orchestrator] Repository created successfully");
     } catch (error: any) {
       console.error("[Orchestrator] Failed to create repository:", error);
+      
+      // Check if it's a name collision error
+      if (error?.status === 422 && error?.message?.includes("already exists")) {
+        throw new Error(
+          `A repository with a similar name already exists. Please try again or delete the existing repository: ${repoName}`
+        );
+      }
+      
       throw new Error(
         `Failed to create GitHub repository: ${error?.message || "Unknown error"}. Please ensure you've granted the necessary permissions.`
       );

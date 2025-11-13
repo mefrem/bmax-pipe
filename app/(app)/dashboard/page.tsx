@@ -112,6 +112,16 @@ export default async function DashboardPage() {
                     </a>
                   )}
                 </div>
+                {run.status === "completed" && run.claude_instructions && (
+                  <details className="mt-2">
+                    <summary className="cursor-pointer text-sm font-medium text-slate-700 hover:text-slate-900">
+                      Show Claude Instructions
+                    </summary>
+                    <div className="mt-2 rounded-md bg-slate-50 p-3">
+                      <pre className="whitespace-pre-wrap text-xs text-slate-700">{run.claude_instructions}</pre>
+                    </div>
+                  </details>
+                )}
               </article>
             ))
           )}

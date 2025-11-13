@@ -145,11 +145,18 @@ export async function submitFullProject(formData: FormData): Promise<ActionRespo
     };
   } catch (error) {
     console.error("Full orchestration failed", error);
+    
+    // Extract useful error message
+    let errorMessage = "Failed to orchestrate repository.";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
     await sql`
       UPDATE project_runs SET status = 'failed', updated_at = now()
       WHERE id = ${runId}
     `;
-    return { success: false, message: "Failed to orchestrate repository." };
+    return { success: false, message: errorMessage };
   }
 }
 
@@ -271,10 +278,17 @@ export async function submitLightProject(formData: FormData): Promise<ActionResp
     };
   } catch (error) {
     console.error("Light orchestration failed", error);
+    
+    // Extract useful error message
+    let errorMessage = "Failed to orchestrate repository.";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    
     await sql`
       UPDATE project_runs SET status = 'failed', updated_at = now()
       WHERE id = ${runId}
     `;
-    return { success: false, message: "Failed to orchestrate repository." };
+    return { success: false, message: errorMessage };
   }
 }
