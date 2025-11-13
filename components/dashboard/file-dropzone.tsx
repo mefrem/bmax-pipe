@@ -42,7 +42,7 @@ export function FileDropzone({
         {label}
         {required ? <span className="text-rose-500"> *</span> : null}
       </label>
-      {description ? <p className="text-xs text-slate-500">{description}</p> : null}
+      {description ? <p className="text-xs text-slate-500 leading-relaxed">{description}</p> : null}
       <div
         {...getRootProps({
           className: `flex h-20 w-full cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed ${

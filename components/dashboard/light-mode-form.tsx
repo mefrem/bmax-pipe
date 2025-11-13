@@ -52,7 +52,7 @@ export function LightModeForm({ action }: LightModeFormProps) {
   });
 
   return (
-    <div className="peer rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg group-hover:opacity-15">
+    <div className="mode-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:z-10">
       <div className="mb-6 text-center">
         <h2 className="text-xl font-semibold text-slate-900">BMAX</h2>
         <p className="mt-2 text-sm text-slate-500">

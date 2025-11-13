@@ -9,3 +9,8 @@
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
 }
+
+/* Mode card hover effect */
+#mode-cards:has(.mode-card:hover) .mode-card:not(:hover) {
+  opacity: 0.15;
+}

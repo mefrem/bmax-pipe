@@ -51,10 +51,10 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold text-slate-900">Choose a mode</h1>
         </div>
         
-        <div className="relative grid gap-6 lg:grid-cols-2">
+        <div className="relative grid gap-6 lg:grid-cols-2" id="mode-cards">
           <FullModeForm templates={templates} action={submitFullProject as DashboardAction} />
           
-          <div className="absolute left-1/2 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 lg:block">
+          <div className="absolute left-1/2 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 lg:block pointer-events-none">
             <div className="rounded-full border-2 border-slate-300 bg-white px-4 py-2 font-semibold text-slate-500 shadow-sm">
               OR
             </div>

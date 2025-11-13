@@ -91,7 +91,7 @@ export function FullModeForm({ templates, action }: FullModeFormProps) {
   });
 
   return (
-    <div className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg peer-hover:opacity-15">
+    <div className="mode-card rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:z-10">
       <div className="mb-6 text-center">
         <h2 className="text-xl font-semibold text-slate-900">YOLO MODE</h2>
         <p className="mt-2 text-sm text-slate-500">
@@ -139,7 +139,7 @@ export function FullModeForm({ templates, action }: FullModeFormProps) {
             </div>
             <FileDropzone
               label="Project brief"
-              description="Upload a markdown or PDF brief from the BMAD planning phase."
+              description="Upload a markdown or PDF project brief or description."
               file={briefFile}
               required
               onFileSelect={setBriefFile}
