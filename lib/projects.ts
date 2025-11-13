@@ -46,32 +46,41 @@ export async function ensureCoreSchema() {
 
 export async function ensureProjectTemplates() {
   const entries = await fs.readdir(projectsDir);
+  const mdFiles = entries.filter((file) => file.endsWith(".md"));
+  const currentSlugs = mdFiles.map((file) => file.replace(/\.md$/i, ""));
 
+  // Add or update templates from files
   await Promise.all(
-    entries
-      .filter((file) => file.endsWith(".md"))
-      .map(async (file) => {
-        const slug = file.replace(/\.md$/i, "");
-        let name = slug
-          .replace(/_/g, " ")
-          .replace(/\s+/g, " ")
-          .trim();
-        
-        // Remove "PRD " prefix if present
-        if (name.startsWith("PRD ")) {
-          name = name.substring(4);
-        }
-        
-        const fullPath = path.join(projectsDir, file);
+    mdFiles.map(async (file) => {
+      const slug = file.replace(/\.md$/i, "");
+      let name = slug
+        .replace(/_/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      
+      // Remove "PRD " prefix if present
+      if (name.startsWith("PRD ")) {
+        name = name.substring(4);
+      }
+      
+      const fullPath = path.join(projectsDir, file);
 
-        await sql`
-          INSERT INTO project_templates (slug, name, brief_path)
-          VALUES (${slug}, ${name}, ${fullPath})
-          ON CONFLICT (slug)
-          DO UPDATE SET name = EXCLUDED.name, brief_path = EXCLUDED.brief_path, updated_at = now()
-        `;
-      })
+      await sql`
+        INSERT INTO project_templates (slug, name, brief_path)
+        VALUES (${slug}, ${name}, ${fullPath})
+        ON CONFLICT (slug)
+        DO UPDATE SET name = EXCLUDED.name, brief_path = EXCLUDED.brief_path, updated_at = now()
+      `;
+    })
   );
+
+  // Remove templates that no longer have files
+  if (currentSlugs.length > 0) {
+    await sql`
+      DELETE FROM project_templates
+      WHERE slug NOT IN ${sql(currentSlugs)}
+    `;
+  }
 }
 
 export async function fetchProjectTemplates(): Promise<ProjectTemplateRecord[]> {
