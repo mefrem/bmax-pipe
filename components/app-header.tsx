@@ -14,6 +14,8 @@ export async function AppHeader() {
     redirect("/signin");
   }
 
+  const isAdmin = session.user.email === "maxim.efremov@gmail.com";
+
   return (
     <header className="border-b border-slate-200 bg-white">
       <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
@@ -21,6 +23,14 @@ export async function AppHeader() {
           bmax
         </Link>
         <div className="flex items-center gap-4">
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="text-sm font-medium text-slate-600 hover:text-slate-900"
+            >
+              Admin
+            </Link>
+          )}
           <span className="text-sm text-slate-500">{session.user.email}</span>
           <form action={handleSignOut}>
             <button

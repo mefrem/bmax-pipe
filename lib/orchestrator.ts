@@ -238,7 +238,7 @@ export async function orchestrateRepository({
 
     // Wait a moment for GitHub to initialize the repository
     console.log("[Orchestrator] Waiting for repository initialization...");
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
     // Get the actual default branch
     const { data: repoInfo } = await octokit.repos.get({
