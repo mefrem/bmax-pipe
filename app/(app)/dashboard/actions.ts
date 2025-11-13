@@ -32,6 +32,10 @@ export async function submitFullProject(formData: FormData): Promise<ActionRespo
     return { success: false, message: "You must be signed in." };
   }
 
+  if (!session.user.accessToken) {
+    return { success: false, message: "GitHub authorization required. Please sign out and sign in again to grant repository permissions." };
+  }
+
   await ensureCoreSchema();
   await ensureProjectTemplates();
 
@@ -117,6 +121,7 @@ export async function submitFullProject(formData: FormData): Promise<ActionRespo
       mode: "full",
       projectName: finalProjectName,
       userEmail: session.user.email!,
+      userAccessToken: session.user.accessToken,
       documents: [briefSource]
     };
 
@@ -153,6 +158,10 @@ export async function submitLightProject(formData: FormData): Promise<ActionResp
 
   if (!session?.user?.id || !session.user.email) {
     return { success: false, message: "You must be signed in." };
+  }
+
+  if (!session.user.accessToken) {
+    return { success: false, message: "GitHub authorization required. Please sign out and sign in again to grant repository permissions." };
   }
 
   await ensureCoreSchema();
@@ -240,6 +249,7 @@ export async function submitLightProject(formData: FormData): Promise<ActionResp
       mode: "light",
       projectName,
       userEmail: session.user.email!,
+      userAccessToken: session.user.accessToken,
       documents
     });
 

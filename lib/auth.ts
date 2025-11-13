@@ -40,18 +40,27 @@ export const {
     GitHub({
       clientId: env.GITHUB_CLIENT_ID,
       clientSecret: env.GITHUB_CLIENT_SECRET,
+      authorization: {
+        params: {
+          scope: "read:user user:email public_repo",
+        },
+      },
     }),
   ],
   callbacks: {
     async jwt({ token, account, profile }) {
       if (account && profile) {
         token.id = profile.id;
+        token.accessToken = account.access_token;
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user && token.id) {
         session.user.id = String(token.id);
+      }
+      if (session.user && token.accessToken) {
+        session.user.accessToken = token.accessToken as string;
       }
       return session;
     },
