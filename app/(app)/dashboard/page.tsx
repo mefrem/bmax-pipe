@@ -38,9 +38,25 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-10">
-      <section className="grid gap-6 lg:grid-cols-2">
-        <FullModeForm templates={templates} action={submitFullProject as DashboardAction} />
-        <LightModeForm action={submitLightProject as DashboardAction} />
+      <section>
+        <div className="mb-6 text-center">
+          <h1 className="text-2xl font-bold text-slate-900">Choose a mode</h1>
+          <p className="mt-2 text-sm text-slate-600">
+            Select either YOLO MODE or BMAX to start your orchestration
+          </p>
+        </div>
+        
+        <div className="relative grid gap-6 lg:grid-cols-2">
+          <FullModeForm templates={templates} action={submitFullProject as DashboardAction} />
+          
+          <div className="absolute left-1/2 top-1/2 z-10 hidden -translate-x-1/2 -translate-y-1/2 lg:block">
+            <div className="rounded-full border-2 border-slate-300 bg-white px-4 py-2 font-semibold text-slate-500 shadow-sm">
+              OR
+            </div>
+          </div>
+          
+          <LightModeForm action={submitLightProject as DashboardAction} />
+        </div>
       </section>
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
