@@ -32,11 +32,6 @@ export async function AppHeader() {
           </form>
         </div>
       </div>
-      <div className="border-t border-slate-100 bg-slate-50 py-4 text-center">
-        <p className="text-base font-medium text-slate-700">
-          Let Claude orchestrate the implementation of your app.
-        </p>
-      </div>
     </header>
   );
 }
