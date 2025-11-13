@@ -156,6 +156,20 @@ export default async function DashboardPage() {
           </div>
         </section>
       )}
+
+      <footer className="mt-8 border-t border-slate-200 pt-6 text-center">
+        <p className="text-sm text-slate-500">
+          Open source on{' '}
+          <a
+            href="https://github.com/mefrem/bmax-pipe"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 hover:underline"
+          >
+            GitHub
+          </a>
+        </p>
+      </footer>
     </div>
   );
 }

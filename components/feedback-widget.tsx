@@ -138,7 +138,7 @@ export function FeedbackWidget() {
             <form onSubmit={handleSubmit} className="p-4">
               <div className="mb-4">
                 <label htmlFor="feedback-message" className="mb-1 block text-sm font-medium text-slate-700">
-                  What's on your mind?
+                  What&apos;s on your mind?
                 </label>
                 <textarea
                   id="feedback-message"
