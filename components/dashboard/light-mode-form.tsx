@@ -52,11 +52,11 @@ export function LightModeForm({ action }: LightModeFormProps) {
   });
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="mb-6">
+    <div className="peer rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg group-hover:opacity-50">
+      <div className="mb-6 text-center">
         <h2 className="text-xl font-semibold text-slate-900">BMAX</h2>
-        <p className="text-sm text-slate-500">
-          Upload your `prd.md` and `architecture.md` files (ideally made through the BMAD @pm and @architect analysts) and automate implementation.
+        <p className="mt-2 text-sm text-slate-500">
+          Upload the <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">prd.md</code> and <code className="rounded bg-slate-100 px-1 py-0.5 text-xs">architecture.md</code> you created with the BMAD @pm and @architect elicitation process and automate implementation
         </p>
       </div>
 

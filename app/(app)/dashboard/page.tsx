@@ -36,14 +36,19 @@ export default async function DashboardPage() {
     LIMIT 8
   `;
 
+  const { rows: communityRuns } = await sql<RunRow>`
+    SELECT id, project_name, mode, status, repo_url, claude_instructions, created_at
+    FROM project_runs
+    WHERE user_id != ${session.user?.id ?? null}
+    ORDER BY created_at DESC
+    LIMIT 5
+  `;
+
   return (
     <div className="space-y-10">
       <section>
         <div className="mb-6 text-center">
           <h1 className="text-2xl font-bold text-slate-900">Choose a mode</h1>
-          <p className="mt-2 text-sm text-slate-600">
-            Select either YOLO MODE or BMAX to start your orchestration
-          </p>
         </div>
         
         <div className="relative grid gap-6 lg:grid-cols-2">
@@ -85,31 +90,72 @@ export default async function DashboardPage() {
                     {run.status}
                   </span>
                 </div>
-                {run.repo_url ? (
-                  <a
-                    href={run.repo_url}
-                    className="text-sm text-slate-600 underline"
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    {run.repo_url}
-                  </a>
-                ) : null}
-                {run.claude_instructions ? (
-                  <details className="text-sm text-slate-600">
-                    <summary className="cursor-pointer text-xs font-medium text-slate-500">
-                      Claude instructions
-                    </summary>
-                    <pre className="mt-2 whitespace-pre-wrap rounded bg-slate-50 p-3 text-xs">
-                      {run.claude_instructions}
-                    </pre>
-                  </details>
-                ) : null}
+                <div className="flex gap-4">
+                  {run.repo_url ? (
+                    <a
+                      href={run.repo_url}
+                      className="text-sm text-blue-600 hover:underline"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      View Repo →
+                    </a>
+                  ) : null}
+                  {run.status === "completed" && (
+                    <a
+                      href="https://claude.ai/code"
+                      className="text-sm text-blue-600 hover:underline"
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      Open Claude Code →
+                    </a>
+                  )}
+                </div>
               </article>
             ))
           )}
         </div>
       </section>
+
+      {communityRuns.length > 0 && (
+        <section className="rounded-2xl border border-slate-200 bg-slate-50 p-6 shadow-sm">
+          <h2 className="text-xl font-semibold text-slate-700">Community Activity</h2>
+          <p className="text-sm text-slate-500">See what others are building with bmax</p>
+          <div className="mt-4 divide-y divide-slate-200">
+            {communityRuns.map((run, index) => {
+              const anonymousId = `gauntlet-anon-${100 + index}`;
+              const timeAgo = Math.floor((Date.now() - new Date(run.created_at).getTime()) / 60000);
+              const timeDisplay = timeAgo < 1 ? 'just now' : timeAgo < 60 ? `${timeAgo} minutes ago` : `${Math.floor(timeAgo / 60)} hours ago`;
+              
+              return (
+                <article key={run.id} className="flex flex-col gap-2 py-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-slate-700">
+                        <span className="font-mono text-xs text-slate-500">{anonymousId}</span> started implementing{' '}
+                        <span className="font-medium text-slate-900">{run.project_name}</span>
+                      </p>
+                      <p className="text-xs text-slate-500">{timeDisplay}</p>
+                    </div>
+                    <span
+                      className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                        run.status === "completed"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : run.status === "failed"
+                          ? "bg-rose-100 text-rose-700"
+                          : "bg-amber-100 text-amber-700"
+                      }`}
+                    >
+                      {run.status}
+                    </span>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </div>
   );
 }

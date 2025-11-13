@@ -91,11 +91,11 @@ export function FullModeForm({ templates, action }: FullModeFormProps) {
   });
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-      <div className="mb-6">
+    <div className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg peer-hover:opacity-50">
+      <div className="mb-6 text-center">
         <h2 className="text-xl font-semibold text-slate-900">YOLO MODE</h2>
-        <p className="text-sm text-slate-500">
-          Select a brief, or drop in a project description of your own, and have Claude Code develop the entire project.
+        <p className="mt-2 text-sm text-slate-500">
+          Have Claude Code implement your entire idea
         </p>
       </div>
 
@@ -105,7 +105,7 @@ export function FullModeForm({ templates, action }: FullModeFormProps) {
             <input type="radio" value="template" {...register("mode")} /> Use template
           </label>
           <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
-            <input type="radio" value="custom" {...register("mode")} /> Upload custom brief
+            <input type="radio" value="custom" {...register("mode")} /> Upload project brief
           </label>
         </div>
 
