@@ -62,7 +62,7 @@ export function SuccessModal({ repoName, repoUrl, promptFile, onClose }: Success
           <div className="space-y-6">
             <div>
               <h3 className="mb-4 text-lg font-semibold text-slate-900">
-                Next Steps
+                Last step:
               </h3>
               
               <ol className="space-y-4">
@@ -71,7 +71,7 @@ export function SuccessModal({ repoName, repoUrl, promptFile, onClose }: Success
                     1
                   </span>
                   <div>
-                    <p className="font-medium text-slate-900">Visit Claude Code</p>
+                    <p className="font-medium text-slate-900">Visit Claude Code on Web</p>
                     <a
                       href="https://claude.ai/code"
                       target="_blank"
@@ -89,7 +89,7 @@ export function SuccessModal({ repoName, repoUrl, promptFile, onClose }: Success
                   </span>
                   <div>
                     <p className="font-medium text-slate-900">Select your repository</p>
-                    <p className="mt-1 font-mono text-xs text-slate-600">
+                    <p className="mt-1 font-mono text-sm font-bold text-slate-900">
                       {truncatedRepoName}
                     </p>
                   </div>
@@ -127,7 +127,7 @@ export function SuccessModal({ repoName, repoUrl, promptFile, onClose }: Success
             rel="noopener noreferrer"
             className="flex-1 rounded bg-amber-900 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-amber-800"
           >
-            Open Claude Code
+            Open Claude Code →
           </a>
           <button
             onClick={onClose}
