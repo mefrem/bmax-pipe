@@ -39,8 +39,35 @@ function slugify(value: string) {
   return value
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 60);
+    .replace(/^-+|-+$/g, "");
+}
+
+function createShortRepoName(projectName: string): string {
+  // Split into words and take first 2-3 meaningful words
+  const words = projectName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s]+/g, " ") // Replace special chars with spaces
+    .split(/\s+/)
+    .filter((word) => word.length > 2); // Filter out short words like "a", "an", "the"
+
+  // Take first 2-3 words, max 20 chars total
+  let shortName = "";
+  for (const word of words) {
+    if (shortName.length + word.length + 1 <= 20) {
+      shortName += (shortName ? "-" : "") + word;
+    } else {
+      break;
+    }
+    // Stop after 3 words
+    if (shortName.split("-").length >= 3) break;
+  }
+
+  // Fallback if no good words found
+  if (!shortName) {
+    shortName = slugify(projectName).slice(0, 15);
+  }
+
+  return shortName || "project";
 }
 
 async function copyStartingProject(targetDir: string) {
@@ -196,8 +223,8 @@ export async function orchestrateRepository({
   userAccessToken,
   documents,
 }: OrchestrationPayload): Promise<OrchestrationResult> {
-  const repoSlug = slugify(projectName);
-  const repoName = `bmax-${repoSlug || "project"}-${Date.now()}`;
+  const shortName = createShortRepoName(projectName);
+  const repoName = `bmax-${shortName}-app`;
 
   const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "bmax-pipe-"));
 
