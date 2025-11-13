@@ -45,10 +45,10 @@ export default async function DashboardPage() {
   `;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       <section>
-        <div className="mb-6 text-center">
-          <h1 className="text-2xl font-bold text-slate-900">Choose a mode</h1>
+        <div className="mb-4 text-center">
+          <h1 className="text-xl font-bold text-slate-900">Choose a mode</h1>
         </div>
         
         <div className="relative grid gap-6 lg:grid-cols-2" id="mode-cards">

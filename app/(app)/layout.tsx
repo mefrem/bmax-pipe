@@ -16,7 +16,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   return (
     <AuthProvider session={session}>
       <AppHeader />
-      <main className="mx-auto w-full max-w-5xl px-6 py-8">{children}</main>
+      <main className="mx-auto w-full max-w-5xl px-6 py-6">{children}</main>
       <FeedbackWidget />
     </AuthProvider>
   );

@@ -12,5 +12,5 @@ body {
 
 /* Mode card hover effect */
 #mode-cards:has(.mode-card:hover) .mode-card:not(:hover) {
-  opacity: 0.15;
+  opacity: 0.25;
 }
