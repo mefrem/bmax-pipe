@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 
 type SuccessModalProps = {
   repoName: string;
@@ -11,6 +12,12 @@ type SuccessModalProps = {
 
 export function SuccessModal({ repoName, repoUrl, promptFile, onClose }: SuccessModalProps) {
   const [copied, setCopied] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+    return () => setMounted(false);
+  }, []);
   
   const truncatedRepoName = repoName.length > 20 ? repoName.substring(0, 20) + "..." : repoName;
   const promptText = `Load \`${promptFile}\` into your context and Go!`;
@@ -21,7 +28,7 @@ export function SuccessModal({ repoName, repoUrl, promptFile, onClose }: Success
     setTimeout(() => setCopied(false), 2000);
   };
 
-  return (
+  const modalContent = (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
       <div className="relative w-full max-w-2xl rounded-lg bg-white shadow-2xl">
         {/* Header */}
@@ -139,5 +146,9 @@ export function SuccessModal({ repoName, repoUrl, promptFile, onClose }: Success
       </div>
     </div>
   );
+  
+  if (!mounted) return null;
+  
+  return createPortal(modalContent, document.body);
 }
 
