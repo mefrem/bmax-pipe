@@ -16,16 +16,31 @@ const serverEnvSchema = z.object({
 
 export type ServerEnv = z.infer<typeof serverEnvSchema>;
 
-export const env: ServerEnv = serverEnvSchema.parse({
-  NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
-  GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
-  GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
-  BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
-  POSTGRES_URL: process.env.POSTGRES_URL,
-  POSTGRES_URL_NON_POOLING: process.env.POSTGRES_URL_NON_POOLING,
-  POSTGRES_PRISMA_URL: process.env.POSTGRES_PRISMA_URL,
-  POSTGRES_USER: process.env.POSTGRES_USER,
-  POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
-  POSTGRES_HOST: process.env.POSTGRES_HOST,
-  POSTGRES_DATABASE: process.env.POSTGRES_DATABASE
+// Defer validation to runtime to avoid build-time failures in CI
+// when environment variables aren't available during Next.js static analysis
+let _env: ServerEnv | null = null;
+
+function getEnv(): ServerEnv {
+  if (!_env) {
+    _env = serverEnvSchema.parse({
+      NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
+      GITHUB_CLIENT_ID: process.env.GITHUB_CLIENT_ID,
+      GITHUB_CLIENT_SECRET: process.env.GITHUB_CLIENT_SECRET,
+      BLOB_READ_WRITE_TOKEN: process.env.BLOB_READ_WRITE_TOKEN,
+      POSTGRES_URL: process.env.POSTGRES_URL,
+      POSTGRES_URL_NON_POOLING: process.env.POSTGRES_URL_NON_POOLING,
+      POSTGRES_PRISMA_URL: process.env.POSTGRES_PRISMA_URL,
+      POSTGRES_USER: process.env.POSTGRES_USER,
+      POSTGRES_PASSWORD: process.env.POSTGRES_PASSWORD,
+      POSTGRES_HOST: process.env.POSTGRES_HOST,
+      POSTGRES_DATABASE: process.env.POSTGRES_DATABASE
+    });
+  }
+  return _env;
+}
+
+export const env: ServerEnv = new Proxy({} as ServerEnv, {
+  get(_, prop: string) {
+    return getEnv()[prop as keyof ServerEnv];
+  }
 });
